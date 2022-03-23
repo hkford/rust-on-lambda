@@ -7,7 +7,7 @@ export class RustOnLambdaStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
         const lambdaFunction = new lambda.DockerImageFunction(this, 'Function', {
-            code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda')),
+            code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda')),
             architecture: lambda.Architecture.X86_64,
             logRetention: logs.RetentionDays.ONE_DAY
         });
