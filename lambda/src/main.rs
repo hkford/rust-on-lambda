@@ -1,20 +1,33 @@
 use lambda_runtime::{service_fn, Error, LambdaEvent};
 use serde_json::{json, Value};
 use simple_error::SimpleError;
+use tracing::{info, instrument};
+use tracing_subscriber::fmt;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    let event_format = fmt::format::json();
+    tracing_subscriber::fmt().event_format(event_format).init();
     let func = service_fn(handler);
     lambda_runtime::run(func).await?;
     Ok(())
 }
 
+// use instrument attribute for async fn
+// https://github.com/tokio-rs/tracing#in-asynchronous-code
+#[instrument]
 async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let (event, _context) = event.into_parts();
     let message = event["message"].as_str();
     match message {
-        Some(message) => Ok(json!({ "message": format!("Hello, {}!", message) })),
-        None => Err(Box::new(SimpleError::new("No message provided"))),
+        Some(message) => {
+            info!("message: {message} in event");
+            Ok(json!({ "message": format!("Hello, {}!", message) }))
+        }
+        None => {
+            info!("no message provided");
+            Err(Box::new(SimpleError::new("No message provided")))
+        }
     }
 }
 

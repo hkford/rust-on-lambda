@@ -1,4 +1,4 @@
-FROM rust:1.59.0 as build-image
+FROM rust:1.67.0 as build-image
 
 WORKDIR /rust/hello_world
 COPY src/ /rust/hello_world/src/
